@@ -1,13 +1,16 @@
 <template>
-  <myHeader />
-  hello
+  <MyHeader />
+  <MyTab />
+  <router-view></router-view>
 </template>
 
 <script>
-import myHeader from "@/components/header/header";
+import MyHeader from "@/components/header/MyHeader";
+import MyTab from "@/components/tab/MyTab";
+
 export default {
   name: "App",
-  components: { myHeader },
+  components: { MyHeader, MyTab },
 };
 </script>
 

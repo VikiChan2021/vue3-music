@@ -2,15 +2,15 @@
   <div class="header">
     <span class="icon"></span>
     <h1 class="text">Yun Music</h1>
-    <router-link class="mine" to="/user">
-      <i class="icon-mine"></i>
-    </router-link>
+    <!--    <router-link class="mine" to="/user">-->
+    <!--      <i class="icon-mine"></i>-->
+    <!--    </router-link>-->
   </div>
 </template>
 
 <script>
 export default {
-  name: "m-header",
+  name: "MyHeader",
 };
 </script>
 
