@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <span class="icon"></span>
+    <!--    <span class="icon"></span>-->
     <h1 class="text">Yun Music</h1>
     <!--    <router-link class="mine" to="/user">-->
     <!--      <i class="icon-mine"></i>-->
@@ -34,7 +34,7 @@ export default {
     display: inline-block;
     vertical-align: top;
     line-height: 44px;
-    font-size: $font-size-large;
+    font-size: 30rem;
   }
   .mine {
     position: absolute;

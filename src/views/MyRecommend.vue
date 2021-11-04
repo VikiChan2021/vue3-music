@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="recommendWrapper">
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
       <van-swipe-item v-for="b in bannerList" :key="b.bannerId">
         <img :src="b.pic" alt="banner" />
@@ -10,15 +10,16 @@
       class="listScroll"
       v-model:loading="loading"
       :finished="finished"
-      finished-text="没有更多了"
+      finished-span="没有更多了"
       @load="onLoad"
     >
       <div class="listScrollItem" v-for="item in list" :key="item.name">
         <img v-lazy="item.al.picUrl" alt="album" />
-        <view class="musicInfo">
-          <text class="musicName">{{ item.name }}</text>
-          <text class="singer">{{ item.ar[0].name }}</text>
-        </view>
+        <div class="musicInfo">
+          <span class="musicName">{{ item.name }}</span>
+          <span class="singer">{{ item.ar[0].name }}</span>
+        </div>
+        <span class="iconfont icon-bofang"></span>
       </div>
     </van-list>
   </div>
@@ -86,26 +87,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.recommendWrapper {
+  width: 100%;
+}
+
 .my-swipe .van-swipe-item img {
   width: 100%;
 }
 
 .listScroll {
   width: 100%;
-  height: calc(100vh - 245px);
+  height: calc(100vh - 245rem);
   overflow: scroll;
+  margin-top: 30rem;
 }
 .listScroll .listScrollItem {
   display: flex;
   width: 100%;
-  height: 80px;
-  line-height: 80px;
-  margin-bottom: 20px;
+  height: 80rem;
+  line-height: 80rem;
+  margin-bottom: 20rem;
+  padding: 0 20rem;
 }
-.listScroll .listScrollItem image {
-  width: 80px;
-  height: 80px;
-  padding-right: 30px;
+.listScroll .listScrollItem img {
+  width: 80rem;
+  height: 80rem;
+  padding-right: 30rem;
 }
 .listScroll .listScrollItem .musicInfo {
   flex: 1;
@@ -113,18 +120,23 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.listScroll .listScrollItem .musicInfo text {
-  height: 40px;
-  line-height: 40px;
-  font-size: 24px;
+.listScroll .listScrollItem .musicInfo span {
+  height: 40rem;
+  line-height: 40rem;
+  font-size: 24rem;
 
-  max-width: 500px;
+  max-width: 500rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.listScroll .listScrollItem .musicInfo .singer {
+  font-size: 20rem;
+  color: rgba(0, 0, 0, 0.8);
+}
 .listScroll .listScrollItem .iconfont {
-  width: 80px;
-  text-align: right;
+  width: 80rem;
+  line-height: 80rem;
+  font-size: 40rem;
 }
 </style>
