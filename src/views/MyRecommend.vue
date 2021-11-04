@@ -1,21 +1,26 @@
 <template>
-  <div class="listScroll">
+  <div>
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
       <van-swipe-item v-for="b in bannerList" :key="b.bannerId">
         <img :src="b.pic" alt="banner" />
       </van-swipe-item>
     </van-swipe>
 
-    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-      <van-list
-        v-model:loading="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad"
-      >
-        <van-cell v-for="item in list" :key="item" :title="item" />
-      </van-list>
-    </van-pull-refresh>
+    <van-list
+      class="listScroll"
+      v-model:loading="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="onLoad"
+    >
+      <div class="listScrollItem" v-for="item in list" :key="item.name">
+        <img v-lazy="item.al.picUrl" alt="album" />
+        <view class="musicInfo">
+          <text class="musicName">{{ item.name }}</text>
+          <text class="singer">{{ item.ar[0].name }}</text>
+        </view>
+      </div>
+    </van-list>
   </div>
 </template>
 
@@ -43,51 +48,31 @@ export default {
     const bannerListData = await request("/banner", { type: 2 });
     this.bannerList = bannerListData.banners;
 
-    // 排行榜数据
-    const rankId = [19723756, 3779629, 2884035];
-    let rankList = [];
-    for (let i = 0; i < rankId.length; i++) {
-      const topListData = await request("/playlist/detail", { id: rankId[i] });
-      const rankArr = topListData.playlist.tracks.slice(0, 10);
-      rankList = rankList.concat(rankArr);
-      // 每次循环都更新一次数据,以防长时间白屏
-      this.topList = rankList;
-    }
-
     console.log(this.$data);
   },
   setup() {
     const list = ref([]);
     const loading = ref(false);
     const finished = ref(false);
-    const refreshing = ref(false);
 
     const onLoad = () => {
-      setTimeout(() => {
-        if (refreshing.value) {
-          list.value = [];
-          refreshing.value = false;
-        }
+      // 异步更新数据
+      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
+      setTimeout(async () => {
+        // 排行榜数据
+        const topListData = await request("/playlist/detail", {
+          id: 19723756,
+        });
+        list.value = topListData.playlist.tracks.slice(0, 50);
 
-        for (let i = 0; i < 10; i++) {
-          list.value.push(list.value.length + 1);
-        }
+        // 加载状态结束
         loading.value = false;
 
+        // 数据全部加载完成
         if (list.value.length >= 40) {
           finished.value = true;
         }
-      }, 1000);
-    };
-
-    const onRefresh = () => {
-      // 清空列表数据
-      finished.value = false;
-
-      // 重新加载数据
-      // 将 loading 设置为 true，表示处于加载状态
-      loading.value = true;
-      onLoad();
+      }, 0);
     };
 
     return {
@@ -95,8 +80,6 @@ export default {
       onLoad,
       loading,
       finished,
-      onRefresh,
-      refreshing,
     };
   },
 };
@@ -109,7 +92,39 @@ export default {
 
 .listScroll {
   width: 100%;
-  height: 600px;
+  height: calc(100vh - 245px);
   overflow: scroll;
+}
+.listScroll .listScrollItem {
+  display: flex;
+  width: 100%;
+  height: 80px;
+  line-height: 80px;
+  margin-bottom: 20px;
+}
+.listScroll .listScrollItem image {
+  width: 80px;
+  height: 80px;
+  padding-right: 30px;
+}
+.listScroll .listScrollItem .musicInfo {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+}
+.listScroll .listScrollItem .musicInfo text {
+  height: 40px;
+  line-height: 40px;
+  font-size: 24px;
+
+  max-width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.listScroll .listScrollItem .iconfont {
+  width: 80px;
+  text-align: right;
 }
 </style>
