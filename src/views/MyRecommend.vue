@@ -6,14 +6,22 @@
       </van-swipe-item>
     </van-swipe>
 
+    <MyPlayer />
+
     <van-list
       class="listScroll"
       v-model:loading="loading"
       :finished="finished"
-      finished-span="没有更多了"
+      finished-text="没有更多了"
       @load="onLoad"
     >
-      <div class="listScrollItem" v-for="item in list" :key="item.name">
+      <div
+        class="listScrollItem"
+        v-for="(item, index) in list"
+        :key="item.name"
+        @click="showMyPlayer"
+        :id="index"
+      >
         <img v-lazy="item.al.picUrl" alt="album" />
         <div class="musicInfo">
           <span class="musicName">{{ item.name }}</span>
@@ -26,18 +34,22 @@
 </template>
 
 <script>
+import { ref, defineAsyncComponent } from "vue";
+import { useStore } from "vuex";
+import { Swipe, SwipeItem, List } from "vant";
 import request from "@/utils/request";
-import { Swipe, SwipeItem, List, PullRefresh, Cell } from "vant";
-import { ref } from "vue";
+
+const MyPlayer = defineAsyncComponent(() =>
+  import("@/components/player/MyPlayer")
+);
 
 export default {
   name: "MyRecommend",
   components: {
+    MyPlayer,
     "van-swipe": Swipe,
     "van-swipe-item": SwipeItem,
     "van-list": List,
-    "van-pull-refresh": PullRefresh,
-    "van-cell": Cell,
   },
   data() {
     return {
@@ -48,39 +60,35 @@ export default {
   async created() {
     const bannerListData = await request("/banner", { type: 2 });
     this.bannerList = bannerListData.banners;
-
-    console.log(this.$data);
   },
   setup() {
+    const store = useStore();
     const list = ref([]);
     const loading = ref(false);
     const finished = ref(false);
 
-    const onLoad = () => {
-      // 异步更新数据
-      // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-      setTimeout(async () => {
-        // 排行榜数据
-        const topListData = await request("/playlist/detail", {
-          id: 19723756,
-        });
-        list.value = topListData.playlist.tracks.slice(0, 50);
-
-        // 加载状态结束
-        loading.value = false;
-
-        // 数据全部加载完成
-        if (list.value.length >= 40) {
-          finished.value = true;
-        }
-      }, 0);
+    const onLoad = async () => {
+      loading.value = true;
+      const topListData = await request("/playlist/detail", { id: 19723756 });
+      list.value = topListData.playlist.tracks.slice(0, 60);
+      loading.value = false;
+      if (list.value.length >= 40) {
+        finished.value = true;
+      }
+      store.commit("setPlaylist", list.value);
+      store.commit("setSequenceList", list.value);
+    };
+    const showMyPlayer = (event) => {
+      store.commit("setFullScreen", true);
+      store.commit("setCurrentIndex", event.currentTarget.id);
     };
 
     return {
       list,
-      onLoad,
       loading,
       finished,
+      onLoad,
+      showMyPlayer,
     };
   },
 };
