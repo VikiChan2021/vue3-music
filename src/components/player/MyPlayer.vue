@@ -29,6 +29,19 @@
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{ formatTime(currentTime) }}</span>
+            <div class="progress-bar-wrapper">
+              <ProgressBar
+                :progress="progress"
+                @progressChanging="handleProgressChanging"
+                @progressChanged="handleProgressChanged"
+              />
+            </div>
+            <span class="time time-r">{{
+              formatTime(currentSong.dt / 1000)
+            }}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i @click="changeMode" :class="modeIcon"></i>
@@ -52,22 +65,31 @@
         </div>
       </div>
     </transition>
-    <audio ref="audioRef"></audio>
+    <audio
+      ref="audioRef"
+      @timeupdate="handleTimeupdate"
+      @ended="handleEnded"
+    ></audio>
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import { computed, ref, watch } from "vue";
-import request from "@/utils/request";
+// import request from "@/utils/request";
 import useMode from "@/components/player/useMode";
 import useFavorite from "@/components/player/useFavorite";
+import ProgressBar from "@/components/player/ProgressBar";
+import { formatTime } from "@/assets/js/util";
 
 export default {
   name: "MyPlayer",
+  components: { ProgressBar },
   setup() {
     // data
     const audioRef = ref(null);
+    const currentTime = ref(0); // 歌曲正播放到第几秒
+    const isProgressChanging = ref(false); // 进度条是否正在被拖动
 
     // vuex
     const store = useStore();
@@ -95,10 +117,11 @@ export default {
       if (!newSong.id) return;
       if (!oldSong.id) return;
       const audioEl = audioRef.value;
-      const songData = await request("/song/url", {
-        id: newSong.id,
-      });
-      audioEl.src = songData.data[0].url;
+      // const songData = await request("/song/url", {
+      //   id: newSong.id,
+      // });
+      // audioEl.src = songData.data[0].url;
+      audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
       audioEl.play();
       store.commit("setPlayingState", true);
     });
@@ -138,6 +161,30 @@ export default {
       store.commit("setPlayingState", true);
     };
 
+    // audioRef.value.currentTime --> currentTime --> progress --> audioRef.value.currentTime
+    const handleTimeupdate = (event) => {
+      // 每分每秒都对data中的currentTime进行更新,但进度条被拖动时不更新
+      if (isProgressChanging.value) return;
+      currentTime.value = event.target.currentTime;
+    };
+    const progress = computed(() => {
+      return currentTime.value / (currentSong.value.dt / 1000);
+    });
+    // 自定义事件'progressChanging',在子组件emit后,父组件监听到后,执行该回调
+    const handleProgressChanging = (newProgress) => {
+      isProgressChanging.value = true;
+      // 拖动时音频不变,只是显示的时长变
+      currentTime.value = newProgress * (currentSong.value.dt / 1000);
+    };
+    const handleProgressChanged = (newProgress) => {
+      isProgressChanging.value = false;
+      // 拖动结束后,音频和显示的时长都要变
+      audioRef.value.currentTime = newProgress * (currentSong.value.dt / 1000);
+    };
+    const handleEnded = () => {
+      nextSong();
+    };
+
     return {
       fullScreen,
       currentSong,
@@ -148,10 +195,22 @@ export default {
       togglePlay,
       prevSong,
       nextSong,
+      // 切换播放模式
       modeIcon,
       changeMode,
+      // 添加到喜爱列表
       getFavoriteIcon,
       toggleFavorite,
+      // 展示进度条
+      currentTime,
+      handleTimeupdate,
+      formatTime,
+      progress,
+      // 拖动进度条
+      handleProgressChanging,
+      handleProgressChanged,
+      // 播放结束后自动下一首
+      handleEnded,
     };
   },
 };
