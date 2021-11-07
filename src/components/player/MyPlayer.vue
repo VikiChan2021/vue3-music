@@ -17,7 +17,7 @@
         <div class="middle">
           <div class="middle-l">
             <div ref="cdWrapperRef" class="cd-wrapper">
-              <div ref="cdRef" class="cd">
+              <div ref="cdRef" class="cd" :class="rotateCls">
                 <img
                   ref="cdImageRef"
                   class="image"
@@ -65,10 +65,12 @@
         </div>
       </div>
     </transition>
+    <MiniPlayer />
     <audio
       ref="audioRef"
       @timeupdate="handleTimeupdate"
       @ended="handleEnded"
+      @pause="handlePause"
     ></audio>
   </div>
 </template>
@@ -81,10 +83,11 @@ import useMode from "@/components/player/useMode";
 import useFavorite from "@/components/player/useFavorite";
 import ProgressBar from "@/components/player/ProgressBar";
 import { formatTime } from "@/assets/js/util";
+import MiniPlayer from "@/components/player/MiniPlayer";
 
 export default {
   name: "MyPlayer",
-  components: { ProgressBar },
+  components: { MiniPlayer, ProgressBar },
   setup() {
     // data
     const audioRef = ref(null);
@@ -113,17 +116,22 @@ export default {
       const audioEl = audioRef.value;
       newPlaying ? audioEl.play() : audioEl.pause();
     });
-    watch(currentSong, async (newSong, oldSong) => {
-      if (!newSong.id) return;
-      if (!oldSong.id) return;
-      const audioEl = audioRef.value;
-      // const songData = await request("/song/url", {
-      //   id: newSong.id,
-      // });
-      // audioEl.src = songData.data[0].url;
-      audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
-      audioEl.play();
-      store.commit("setPlayingState", true);
+    watch(currentSong, (newSong, oldSong) => {
+      setTimeout(() => {
+        // debugger;
+        console.log(newSong, oldSong);
+        // if (!newSong.id) return;
+        // if (!oldSong.id) return;
+        const audioEl = audioRef.value;
+        // const songData = await request("/song/url", {
+        //   id: newSong.id,
+        // });
+        // audioEl.src = songData.data[0].url;
+        audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
+        if (!oldSong.id) return;
+        audioEl.play();
+        store.commit("setPlayingState", true);
+      }, 0);
     });
 
     // methods
@@ -184,6 +192,11 @@ export default {
     const handleEnded = () => {
       nextSong();
     };
+    const handlePause = () => {
+      console.log("此歌暂无版权,为您播放下一首!");
+    };
+
+    const rotateCls = computed(() => (playing.value ? "rotating" : ""));
 
     return {
       fullScreen,
@@ -211,6 +224,8 @@ export default {
       handleProgressChanged,
       // 播放结束后自动下一首
       handleEnded,
+      rotateCls,
+      handlePause,
     };
   },
 };
@@ -308,9 +323,9 @@ export default {
               border-radius: 50%;
               border: 10px solid rgba(255, 255, 255, 0.1);
             }
-            .playing {
-              animation: rotate 20s linear infinite;
-            }
+          }
+          .rotating {
+            animation: rotate 20s linear infinite;
           }
         }
         .playing-lyric-wrapper {
