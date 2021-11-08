@@ -3,6 +3,7 @@ import MyRecommend from "@/views/MyRecommend";
 import MySinger from "@/views/MySinger";
 import MyTopList from "@/views/MyTopList";
 import MySearch from "@/views/MySearch";
+import topListDetail from "@/views/topListDetail";
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -22,6 +23,12 @@ export default createRouter({
     {
       path: "/top-list",
       component: MyTopList,
+      children: [
+        {
+          path: ":id",
+          component: topListDetail,
+        },
+      ],
     },
     {
       path: "/search",
