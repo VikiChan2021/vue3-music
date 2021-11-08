@@ -1,11 +1,5 @@
 <template>
   <div class="recommendWrapper">
-    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
-      <van-swipe-item v-for="b in bannerList" :key="b.bannerId">
-        <img :src="b.pic" alt="banner" />
-      </van-swipe-item>
-    </van-swipe>
-
     <MyPlayer />
 
     <van-list
@@ -15,6 +9,12 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
+      <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+        <van-swipe-item v-for="b in bannerList" :key="b.bannerId">
+          <img :src="b.pic" alt="banner" />
+        </van-swipe-item>
+      </van-swipe>
+
       <div
         class="listScrollItem"
         v-for="(item, index) in list"
@@ -97,17 +97,21 @@ export default {
 <style lang="scss" scoped>
 .recommendWrapper {
   width: 100%;
-}
-
-.my-swipe .van-swipe-item img {
-  width: 100%;
+  .listScroll {
+    .my-swipe {
+      margin-bottom: 20rem;
+      border-radius: 10rem;
+      .van-swipe-item img {
+        width: 100%;
+      }
+    }
+  }
 }
 
 .listScroll {
   width: 100%;
-  height: calc(100vh - 245rem);
+  height: calc(100vh - 200rem);
   overflow: scroll;
-  margin-top: 30rem;
 }
 .listScroll .listScrollItem {
   display: flex;
@@ -116,6 +120,8 @@ export default {
   line-height: 80rem;
   margin-bottom: 20rem;
   padding: 0 20rem;
+  //加了border-box后, x轴方向不再有滚动条
+  box-sizing: border-box;
 }
 .listScroll .listScrollItem img {
   width: 80rem;
@@ -133,7 +139,7 @@ export default {
   line-height: 40rem;
   font-size: 24rem;
 
-  max-width: 500rem;
+  max-width: 300rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -143,7 +149,6 @@ export default {
   color: rgba(0, 0, 0, 0.8);
 }
 .listScroll .listScrollItem .iconfont {
-  width: 80rem;
   line-height: 80rem;
   font-size: 40rem;
 }

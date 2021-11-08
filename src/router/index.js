@@ -1,9 +1,10 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import MyRecommend from "@/views/MyRecommend";
-import MySinger from "@/views/MySinger";
+import MyVideo from "@/views/MyVideo";
 import MyTopList from "@/views/MyTopList";
 import MySearch from "@/views/MySearch";
 import topListDetail from "@/views/topListDetail";
+import MyLogin from "@/components/login/MyLogin";
 
 export default createRouter({
   history: createWebHashHistory(),
@@ -17,8 +18,8 @@ export default createRouter({
       component: MyRecommend,
     },
     {
-      path: "/singer",
-      component: MySinger,
+      path: "/video",
+      component: MyVideo,
     },
     {
       path: "/top-list",
@@ -33,6 +34,10 @@ export default createRouter({
     {
       path: "/search",
       component: MySearch,
+    },
+    {
+      path: "/user",
+      component: MyLogin,
     },
   ],
 });

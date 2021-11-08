@@ -24,8 +24,8 @@ export default {
           path: "/recommend",
         },
         {
-          name: "歌手",
-          path: "/singer",
+          name: "视频",
+          path: "/video",
         },
         {
           name: "排行",
@@ -46,7 +46,7 @@ export default {
   display: flex;
   height: 44px;
   line-height: 44px;
-  font-size: $font-size-medium;
+  font-size: $font-size-large;
 
   .tab-item {
     flex: 1;

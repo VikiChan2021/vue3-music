@@ -101,6 +101,8 @@ export default {
   line-height: 80rem;
   margin-bottom: 20rem;
   padding: 0 20rem;
+  //加了border-box后, x轴方向不再有滚动条
+  box-sizing: border-box;
 }
 .listScroll .listScrollItem img {
   width: 80rem;
@@ -118,7 +120,7 @@ export default {
   line-height: 40rem;
   font-size: 24rem;
 
-  max-width: 500rem;
+  max-width: 300rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -128,7 +130,6 @@ export default {
   color: rgba(0, 0, 0, 0.8);
 }
 .listScroll .listScrollItem .iconfont {
-  width: 80rem;
   line-height: 80rem;
   font-size: 40rem;
 }

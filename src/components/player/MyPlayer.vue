@@ -78,7 +78,7 @@
 <script>
 import { useStore } from "vuex";
 import { computed, ref, watch } from "vue";
-// import request from "@/utils/request";
+import request from "@/utils/request";
 import useMode from "@/components/player/useMode";
 import useFavorite from "@/components/player/useFavorite";
 import ProgressBar from "@/components/player/ProgressBar";
@@ -117,17 +117,19 @@ export default {
       newPlaying ? audioEl.play() : audioEl.pause();
     });
     watch(currentSong, (newSong, oldSong) => {
-      setTimeout(() => {
+      setTimeout(async () => {
         // debugger;
-        console.log(newSong, oldSong);
         // if (!newSong.id) return;
         // if (!oldSong.id) return;
         const audioEl = audioRef.value;
-        // const songData = await request("/song/url", {
-        //   id: newSong.id,
-        // });
-        // audioEl.src = songData.data[0].url;
-        audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
+        const songData = await request("/song/url", {
+          id: newSong.id,
+        });
+        if (songData) {
+          audioEl.src = songData.data[0].url;
+        } else {
+          audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
+        }
         if (!oldSong.id) return;
         audioEl.play();
         store.commit("setPlayingState", true);
@@ -193,7 +195,7 @@ export default {
       nextSong();
     };
     const handlePause = () => {
-      console.log("此歌暂无版权,为您播放下一首!");
+      // console.log("此歌暂无版权,为您播放下一首!");
     };
 
     const rotateCls = computed(() => (playing.value ? "rotating" : ""));

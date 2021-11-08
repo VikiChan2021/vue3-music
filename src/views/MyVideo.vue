@@ -1,5 +1,5 @@
 <template>
-  <div class="videoContainer">
+  <div v-if="isLogin" class="videoContainer">
     <van-tabs class="navScroll" @click-tab="changeNav">
       <van-tab
         class="navScrollItem"
@@ -12,15 +12,15 @@
     </van-tabs>
 
     <van-pull-refresh v-model="isTriggered" @refresh="handleRefresher">
-      <van-loading
-        v-if="isLoading"
-        vertical
-        style="font-size: 50rem; margin-top: 150rem"
-      >
-        加载中...
-      </van-loading>
+      <!--      <van-loading-->
+      <!--        v-if="isLoadingList"-->
+      <!--        vertical-->
+      <!--        style="font-size: 50rem; margin-top: 150rem"-->
+      <!--        color=" #d43c33"-->
+      <!--      >-->
+      <!--        11111加载中...-->
+      <!--      </van-loading>-->
       <van-list
-        v-else
         class="videoScroll"
         v-model:loading="loading222"
         @load="handleToLower"
@@ -42,7 +42,11 @@
             {{ item.data.title }}
           </div>
           <div class="footer">
-            <img class="avatar" :src="item.data.creator.avatarUrl" />
+            <img
+              class="avatar"
+              :src="item.data.creator.avatarUrl"
+              alt="avatar"
+            />
             <span class="nickName">
               {{ item.data.creator.nickname }}
             </span>
@@ -68,11 +72,23 @@
       </van-list>
     </van-pull-refresh>
   </div>
+  <div v-else class="goToLogin">
+    <van-button
+      round
+      type="primary"
+      color="#d43c33"
+      class="toLoginBtn"
+      @click="toLogin"
+    >
+      点我登录
+    </van-button>
+  </div>
 </template>
 
 <script>
 import request from "@/utils/request";
-import { Tab, Tabs, Loading, PullRefresh, List } from "vant";
+import { Tab, Tabs, Loading, PullRefresh, List, Button } from "vant";
+import { COOKIE_KEY } from "@/assets/js/constant";
 
 export default {
   name: "MyVideo",
@@ -82,46 +98,67 @@ export default {
     "van-loading": Loading,
     "van-pull-refresh": PullRefresh,
     "van-list": List,
+    "van-button": Button,
   },
   data() {
     return {
       videoGroupList: [],
-      navId: "58100",
+      navId: "",
       videoList: [],
       videoId: "",
       videoTimeUpdateList: [],
       isTriggered: false, // 是否正在下拉刷新
       offset: 1, // 加载第几页的数据
       active: 0,
-      isLoading: false,
+      isLoadingList: false,
       loading222: false,
     };
   },
+  computed: {
+    isLogin() {
+      return !!localStorage.getItem(COOKIE_KEY);
+    },
+  },
+  created() {
+    this.getVideoGroupListData();
+  },
+  watch: {
+    navId(newValue) {
+      this.getVideoListData(newValue, this.offset);
+    },
+  },
   methods: {
+    toLogin() {
+      this.$router.push("/user");
+    },
+
     async getVideoGroupListData() {
       const videoGroupListData = await request("/video/group/list");
       this.videoGroupList = videoGroupListData.data.slice(0, 14);
+      this.navId = videoGroupListData.data[0].id || "58100";
     },
     changeNav(event) {
-      console.log(event);
       this.navId = event.name;
       this.videoList = [];
-      this.isLoading = true;
+      this.isLoadingList = true;
       this.getVideoListData(event.name, 1);
     },
     async getVideoListData(navId, offset = 1, type = "") {
+      if (!navId) {
+        navId = "58100";
+      }
       const videoListData = await request("/video/group", {
         id: navId,
         offset,
       });
-      videoListData.datas.forEach(async (item) => {
+      // videoListData.datas是一个数组,但里面的对象没有播放的url,
+      // 所以此处是让每个对象加上urlInfo这个属性
+      for (let item of videoListData.datas) {
         const videoId = item.data.vid;
-        const urlInfo = await request("/video/url", { id: videoId }).then(
+        item.data.urlInfo = await request("/video/url", { id: videoId }).then(
           (obj) => obj.urls[0].url
         );
-        // console.log("urlInfo", urlInfo);
-        item.data.urlInfo = urlInfo;
-      });
+      }
       setTimeout(() => {
         let videoList = this.videoList;
         if (!type) {
@@ -130,11 +167,11 @@ export default {
           videoList = videoListData.datas;
         }
         this.videoList = videoList;
-        this.isLoading = false;
+        this.isLoadingList = false;
         this.isTriggered = false;
         this.offset = offset;
         this.loading222 = false;
-      }, 2000);
+      }, 1000);
     },
     handlePlay(event) {
       console.log(event.target);
@@ -149,10 +186,6 @@ export default {
       offset++;
       this.getVideoListData(this.navId, offset);
     },
-  },
-  mounted() {
-    this.getVideoGroupListData();
-    this.getVideoListData("58100", 1);
   },
 };
 </script>
@@ -231,5 +264,15 @@ export default {
   position: absolute;
   top: -10rem;
   font-size: 10rem;
+}
+
+.goToLogin {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  .toLoginBtn {
+    font-size: $font-size-large-x !important;
+  }
 }
 </style>
