@@ -20,7 +20,7 @@
         @click="showMyPlayer"
         :id="index"
       >
-        <img v-lazy="item.al.picUrl" alt="album" />
+        <img :src="item.al.picUrl" alt="album" />
         <div class="musicInfo">
           <span class="musicName">{{ item.name }}</span>
           <span class="singer">{{ item.ar[0].name }}</span>

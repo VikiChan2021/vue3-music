@@ -26,6 +26,7 @@
             />
           </div>
         </div>
+
         <button class="confirm-btn" @click="handleLogin">
           使用真实网易云账号登录
         </button>
@@ -45,7 +46,6 @@
 <script>
 import { Toast } from "vant";
 import request from "@/utils/request";
-import { USER_INFO_KEY } from "@/assets/js/constant";
 
 export default {
   name: "MyLogin",
@@ -92,15 +92,16 @@ export default {
         return;
       }
       // 3.后端验证
+      Toast({ message: "登录中..." });
       const res = await request("/login/cellphone", { phone, password });
       if (res.code === 200) {
         Toast({
           message: "登录成功",
         });
-        localStorage.setItem(USER_INFO_KEY, JSON.stringify(res.profile));
+        // localStorage.setItem(USER_INFO_KEY, JSON.stringify(res.profile));
         setTimeout(() => {
-          this.$router.push("/");
-        }, 1000);
+          this.$router.push("/video");
+        }, 500);
       } else if (res.code === 400) {
         Toast({
           message: "手机号不正确",

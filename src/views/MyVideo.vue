@@ -118,12 +118,12 @@ export default {
       active: 0,
       isLoadingNextTab: false,
       isLoadingCurrentList: false,
+      isLogin: false,
     };
   },
-  computed: {
-    isLogin() {
-      return !!localStorage.getItem(COOKIE_KEY);
-    },
+  activated() {
+    this.isLogin = !!localStorage.getItem(COOKIE_KEY);
+    console.log("activated", "检查是否登录了");
   },
   created() {
     this.getVideoGroupListData();
