@@ -5,8 +5,6 @@
       <div class="title">{{ currentTopListObj.name }}</div>
     </div>
 
-    <MyPlayer />
-
     <van-list class="listScroll">
       <div
         class="listScrollItem"
@@ -34,8 +32,8 @@ import MyPlayer from "@/components/player/MyPlayer";
 export default {
   name: "topListDetail",
   components: {
-    "van-list": List,
     MyPlayer,
+    "van-list": List,
   },
   data() {
     return {

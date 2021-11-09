@@ -11,18 +11,24 @@
       </van-tab>
     </van-tabs>
 
-    <van-pull-refresh v-model="isTriggered" @refresh="handleRefresher">
-      <!--      <van-loading-->
-      <!--        v-if="isLoadingList"-->
-      <!--        vertical-->
-      <!--        style="font-size: 50rem; margin-top: 150rem"-->
-      <!--        color=" #d43c33"-->
-      <!--      >-->
-      <!--        11111加载中...-->
-      <!--      </van-loading>-->
+    <van-loading
+      v-if="isLoadingNextTab"
+      vertical
+      style="font-size: 50rem; margin-top: 150rem"
+      color="#d43c33"
+    >
+      新的视频即将到来...
+    </van-loading>
+    <van-pull-refresh
+      v-else
+      v-model="isPullingRefresh"
+      @refresh="handleRefresher"
+      loading-text="下拉刷新中!!!"
+    >
       <van-list
         class="videoScroll"
-        v-model:loading="loading222"
+        v-model:loading="isLoadingCurrentList"
+        loading-text="莫慌,加载中!!!"
         @load="handleToLower"
       >
         <div
@@ -107,11 +113,11 @@ export default {
       videoList: [],
       videoId: "",
       videoTimeUpdateList: [],
-      isTriggered: false, // 是否正在下拉刷新
+      isPullingRefresh: false, // 是否正在下拉刷新
       offset: 1, // 加载第几页的数据
       active: 0,
-      isLoadingList: false,
-      loading222: false,
+      isLoadingNextTab: false,
+      isLoadingCurrentList: false,
     };
   },
   computed: {
@@ -140,7 +146,7 @@ export default {
     changeNav(event) {
       this.navId = event.name;
       this.videoList = [];
-      this.isLoadingList = true;
+      this.isLoadingNextTab = true;
       this.getVideoListData(event.name, 1);
     },
     async getVideoListData(navId, offset = 1, type = "") {
@@ -167,10 +173,10 @@ export default {
           videoList = videoListData.datas;
         }
         this.videoList = videoList;
-        this.isLoadingList = false;
-        this.isTriggered = false;
+        this.isLoadingNextTab = false;
+        this.isPullingRefresh = false;
         this.offset = offset;
-        this.loading222 = false;
+        this.isLoadingCurrentList = false;
       }, 1000);
     },
     handlePlay(event) {
@@ -275,4 +281,8 @@ export default {
     font-size: $font-size-large-x !important;
   }
 }
+
+//:root {
+//  --van-list-text-color: #d43c33;
+//}
 </style>

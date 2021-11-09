@@ -195,7 +195,8 @@ export default {
       nextSong();
     };
     const handlePause = () => {
-      // console.log("此歌暂无版权,为您播放下一首!");
+      console.log("被意外暂停播放了");
+      store.commit("setPlayingState", false);
     };
 
     const rotateCls = computed(() => (playing.value ? "rotating" : ""));

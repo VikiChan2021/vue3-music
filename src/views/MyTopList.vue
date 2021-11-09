@@ -82,6 +82,9 @@ export default {
       this.$router.push({
         path: `/top-list/${item.id}`,
       });
+      // TODO:1.把playList变成相应的榜单
+      // TODO:2.添加查看当前歌单和喜爱歌单的功能
+      console.log("newPlayList", item);
     },
   },
 };

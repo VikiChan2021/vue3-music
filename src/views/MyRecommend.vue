@@ -1,7 +1,5 @@
 <template>
   <div class="recommendWrapper">
-    <MyPlayer />
-
     <van-list
       class="listScroll"
       v-model:loading="loading"
@@ -9,7 +7,7 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+      <van-swipe class="my-swipe" :autoplay="5000" indicator-color="white">
         <van-swipe-item v-for="b in bannerList" :key="b.bannerId">
           <img :src="b.pic" alt="banner" />
         </van-swipe-item>
@@ -34,14 +32,11 @@
 </template>
 
 <script>
-import { ref, defineAsyncComponent } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import { Swipe, SwipeItem, List } from "vant";
 import request from "@/utils/request";
-
-const MyPlayer = defineAsyncComponent(() =>
-  import("@/components/player/MyPlayer")
-);
+import MyPlayer from "@/components/player/MyPlayer";
 
 export default {
   name: "MyRecommend",

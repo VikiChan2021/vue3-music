@@ -23,9 +23,9 @@
       <div class="control">
         <i class="icon-mini" :class="miniPlayIcon" @click.stop="togglePlay"></i>
       </div>
-      <div class="control">
-        <i class="icon-playlist"></i>
-      </div>
+      <!--      <div class="control">-->
+      <!--        <i class="icon-playlist"></i>-->
+      <!--      </div>-->
     </div>
   </transition>
 </template>

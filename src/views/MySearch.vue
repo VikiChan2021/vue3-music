@@ -39,7 +39,15 @@
         ></div>
       </div>
 
-      <div class="hotContainer">
+      <van-loading
+        v-if="isLoadingHotList"
+        vertical
+        style="font-size: 50rem; margin-top: 150rem"
+        color="#d43c33"
+      >
+        热搜榜即将到来...
+      </van-loading>
+      <div class="hotContainer" v-else>
         <div class="title">热搜榜</div>
         <div class="hotList">
           <div
@@ -65,10 +73,14 @@
 <script>
 import request from "@/utils/request";
 import { SEARCH_HISTORY_LIST_KEY } from "@/assets/js/constant";
+import { Loading } from "vant";
 
 let timer;
 export default {
   name: "MySearch",
+  components: {
+    "van-loading": Loading,
+  },
   data() {
     return {
       placeholderContent: "",
@@ -76,6 +88,7 @@ export default {
       searchContent: "",
       searchResultList: [],
       searchHistoryList: [],
+      isLoadingHotList: false,
     };
   },
   mounted() {
@@ -84,11 +97,13 @@ export default {
   },
   methods: {
     async getInitData() {
+      this.isLoadingHotList = true;
       const placeholderContentData = await request("/search/default");
       const hotListData = await request("/search/hot/detail");
 
       this.placeholderContent = placeholderContentData.data.showKeyword;
       this.hotList = hotListData.data;
+      this.isLoadingHotList = false;
     },
 
     getSearchHistoryList() {
@@ -193,23 +208,31 @@ export default {
   flex-wrap: wrap;
 }
 .hotContainer .hotList .hotListItem {
+  display: flex;
+
   width: 50%;
   margin-bottom: 20rem;
   box-sizing: border-box;
   font-size: 22rem;
 
-  height: 30rem;
-  line-height: 30rem;
+  //height: 30rem;
+  //line-height: 30rem;
 }
 .hotContainer .hotList .hotListItem .order {
   width: 30rem;
   text-align: center;
-  margin: 0 30rem;
+  margin: 0 10rem;
+}
+.hotContainer .hotList .hotListItem .name {
+  max-width: 200rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .hotContainer .hotList .hotListItem .iconImg {
-  width: 30rem;
+  width: 25rem;
   height: 20rem;
-  margin-left: 20rem;
+  margin-left: 10rem;
 }
 
 .showSearchContent .searchContent {
