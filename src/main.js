@@ -4,7 +4,7 @@ import router from "./router";
 import store from "./store";
 // 引入全局样式
 import "@/assets/scss/index.scss";
-
+// 引入v-lazy指令
 import { Lazyload } from "vant";
 
 const app = createApp(App);
