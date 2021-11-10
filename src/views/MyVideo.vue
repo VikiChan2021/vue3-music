@@ -123,9 +123,11 @@ export default {
     };
   },
   activated() {
-    this.isLogin = !!localStorage.getItem(COOKIE_KEY);
     console.log("activated", "检查是否登录了");
-    this.getVideoListData(this.navId, this.offset);
+    this.isLogin = !!localStorage.getItem(COOKIE_KEY);
+    if (this.isLogin) {
+      this.getVideoListData(this.navId, this.offset);
+    }
   },
   created() {
     this.getVideoGroupListData();
