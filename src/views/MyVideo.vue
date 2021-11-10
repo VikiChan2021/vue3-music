@@ -30,6 +30,7 @@
         v-model:loading="isLoadingCurrentList"
         loading-text="莫慌,加载中!!!"
         @load="handleToLower"
+        :immediate-check="false"
       >
         <div
           class="videoScrollItem"
@@ -130,6 +131,9 @@ export default {
   },
   watch: {
     navId(newValue) {
+      this.offset = 1;
+      this.videoList = [];
+      this.isLoadingNextTab = true;
       this.getVideoListData(newValue, this.offset);
     },
   },
@@ -137,17 +141,14 @@ export default {
     toLogin() {
       this.$router.push("/user");
     },
+    changeNav(event) {
+      this.navId = event.name;
+    },
 
     async getVideoGroupListData() {
       const videoGroupListData = await request("/video/group/list");
       this.videoGroupList = videoGroupListData.data.slice(0, 14);
       this.navId = videoGroupListData.data[0].id || "58100";
-    },
-    changeNav(event) {
-      this.navId = event.name;
-      this.videoList = [];
-      this.isLoadingNextTab = true;
-      this.getVideoListData(event.name, 1);
     },
     async getVideoListData(navId, offset = 1, type = "") {
       if (!navId) {
@@ -161,36 +162,38 @@ export default {
       // 所以此处是让每个对象加上urlInfo这个属性
       for (let item of videoListData.datas) {
         const videoId = item.data.vid;
+        // 不让重复的视频出现在列表中
+        const index = this.videoList.findIndex(
+          (oldItem) => oldItem.data.vid === videoId
+        );
+        if (index > -1) {
+          continue;
+        }
+
         item.data.urlInfo = await request("/video/url", { id: videoId }).then(
           (obj) => obj.urls[0].url
         );
-      }
-      setTimeout(() => {
-        let videoList = this.videoList;
         if (!type) {
-          videoList.push(...videoListData.datas);
+          this.videoList.push(item);
+          console.log("此次新push的视频ID", item.data.vid);
         } else if (type === "refresh") {
-          videoList = videoListData.datas;
+          this.videoList.unshift(item);
+          console.log("此次新unshift的视频ID", item.data.vid);
         }
-        this.videoList = videoList;
         this.isLoadingNextTab = false;
         this.isPullingRefresh = false;
-        this.offset = offset;
         this.isLoadingCurrentList = false;
-      }, 1000);
+        this.offset = offset + 1;
+      }
     },
     handlePlay(event) {
       console.log(event.target);
     },
     handleRefresher() {
-      let offset = this.offset;
-      offset++;
-      this.getVideoListData(this.navId, offset, "refresh");
+      this.getVideoListData(this.navId, this.offset, "refresh");
     },
     handleToLower() {
-      let offset = this.offset;
-      offset++;
-      this.getVideoListData(this.navId, offset);
+      this.getVideoListData(this.navId, this.offset);
     },
   },
 };

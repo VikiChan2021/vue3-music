@@ -92,7 +92,7 @@ export default {
         return;
       }
       // 3.后端验证
-      Toast({ message: "登录中..." });
+      Toast({ message: "登录中...", duration: 5000 });
       const res = await request("/login/cellphone", { phone, password });
       if (res.code === 200) {
         Toast({
