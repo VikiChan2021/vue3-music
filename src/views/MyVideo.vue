@@ -94,7 +94,7 @@
 
 <script>
 import request from "@/utils/request";
-import { Tab, Tabs, Loading, PullRefresh, List, Button, Toast } from "vant";
+import { Tab, Tabs, Loading, PullRefresh, List, Button } from "vant";
 import { COOKIE_KEY } from "@/assets/js/constant";
 
 export default {
@@ -159,6 +159,10 @@ export default {
         id: navId,
         offset,
       });
+      if (!videoListData) {
+        return;
+      }
+
       // videoListData.datas是一个数组,但里面的对象没有播放的url,
       // 所以此处是让每个对象加上urlInfo这个属性
       for (let item of videoListData.datas) {
@@ -174,16 +178,16 @@ export default {
         item.data.urlInfo = await request("/video/url", { id: videoId }).then(
           (obj) => obj.urls[0].url
         );
-        Toast({
-          message: `拿到本视频的url了--方式1--${item.data.urlInfo}`,
-          duration: 5000,
-        });
+        // Toast({
+        //   message: `拿到本视频的url了--方式1--${item.data.urlInfo}`,
+        //   duration: 5000,
+        // });
         if (!type) {
           this.videoList.push(item);
-          console.log("此次新push的视频ID", item.data.vid);
+          // console.log("此次新push的视频ID", item.data.vid);
         } else if (type === "refresh") {
           this.videoList.unshift(item);
-          console.log("此次新unshift的视频ID", item.data.vid);
+          // console.log("此次新unshift的视频ID", item.data.vid);
         }
         this.isLoadingNextTab = false;
         this.isPullingRefresh = false;
