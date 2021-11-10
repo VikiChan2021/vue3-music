@@ -94,7 +94,7 @@
 
 <script>
 import request from "@/utils/request";
-import { Tab, Tabs, Loading, PullRefresh, List, Button } from "vant";
+import { Tab, Tabs, Loading, PullRefresh, List, Button, Toast } from "vant";
 import { COOKIE_KEY } from "@/assets/js/constant";
 
 export default {
@@ -173,6 +173,10 @@ export default {
         item.data.urlInfo = await request("/video/url", { id: videoId }).then(
           (obj) => obj.urls[0].url
         );
+        Toast({
+          message: `拿到本视频的url了--方式1--${item.data.urlInfo}`,
+          duration: 5000,
+        });
         if (!type) {
           this.videoList.push(item);
           console.log("此次新push的视频ID", item.data.vid);
