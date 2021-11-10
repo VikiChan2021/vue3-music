@@ -12,9 +12,9 @@ const request = (url, params = {}, method = "GET") => {
     url: config.host + url,
     params,
     method,
-    headers: {
-      cookie: localStorage.getItem(COOKIE_KEY),
-    },
+    // headers: {
+    //   cookie: localStorage.getItem(COOKIE_KEY),
+    // },
   }).then(
     (res) => {
       if (url === "/login/cellphone") {
