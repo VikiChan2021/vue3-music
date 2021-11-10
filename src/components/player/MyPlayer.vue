@@ -113,27 +113,27 @@ export default {
 
     // watch
     watch(playing, (newPlaying) => {
-      const audioEl = audioRef.value;
-      newPlaying ? audioEl.play() : audioEl.pause();
+      newPlaying ? audioRef.value.play() : audioRef.value.pause();
     });
-    watch(currentSong, (newSong, oldSong) => {
-      setTimeout(async () => {
-        // debugger;
-        // if (!newSong.id) return;
-        // if (!oldSong.id) return;
-        const audioEl = audioRef.value;
-        const songData = await request("/song/url", {
-          id: newSong.id,
-        });
-        if (songData) {
-          audioEl.src = songData.data[0].url;
-        } else {
-          audioEl.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
-        }
-        if (!oldSong.id) return;
-        audioEl.play();
-        store.commit("setPlayingState", true);
-      }, 0);
+    watch(currentSong, async (newSong, oldSong) => {
+      store.commit("setPlayingState", false);
+      if (audioRef.value) {
+        audioRef.value.currentTime = 0;
+      }
+
+      const songData = await request("/song/url", {
+        id: newSong.id,
+      });
+      if (songData) {
+        audioRef.value.src = songData.data[0].url;
+        console.log("拿到本歌曲的url了1", audioRef.value.src);
+      } else {
+        audioRef.value.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
+        console.log("拿到本歌曲的url了2", audioRef.value.src);
+      }
+      if (!oldSong.id) return;
+      store.commit("setPlayingState", true);
+      console.log("切歌完成,准备播放歌曲");
     });
 
     // methods
@@ -144,6 +144,9 @@ export default {
       store.commit("setPlayingState", !playing.value);
     };
     const prevSong = () => {
+      store.commit("setPlayingState", false);
+      audioRef.value.currentTime = 0;
+
       let index = currentIndex.value;
       index--;
       if (index < 0) {
@@ -157,7 +160,9 @@ export default {
       store.commit("setPlayingState", true);
     };
     const nextSong = () => {
-      // debugger;
+      store.commit("setPlayingState", false);
+      audioRef.value.currentTime = 0;
+
       let index = currentIndex.value;
       index++;
       if (index > playlist.value.length - 1) {
