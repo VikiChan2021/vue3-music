@@ -116,19 +116,12 @@ export default {
     watch(playing, (newPlaying) => {
       newPlaying ? audioRef.value.play() : audioRef.value.pause();
     });
-    watch(currentSong, async (newSong, oldSong) => {
+    watch(currentSong, async (newSong) => {
       store.commit("setPlayingState", false);
       if (audioRef.value) {
-        Toast({
-          message: `111111--${audioRef.value?.src}`,
-          duration: 5000,
-        });
         audioRef.value.currentTime = 0;
       } else {
-        Toast({
-          message: `22222--${audioRef.value?.src}`,
-          duration: 5000,
-        });
+        return;
       }
 
       const songData = await request("/song/url", {
@@ -136,14 +129,18 @@ export default {
       });
       if (songData) {
         audioRef.value.src = songData.data[0].url;
-        console.log("拿到本歌曲的url了1", audioRef.value.src);
+        Toast({
+          message: `拿到本歌曲的url了1--${audioRef.value?.src}`,
+          duration: 5000,
+        });
       } else {
         audioRef.value.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
-        console.log("拿到本歌曲的url了2", audioRef.value.src);
+        Toast({
+          message: `拿到本歌曲的url了2--${audioRef.value?.src}`,
+          duration: 5000,
+        });
       }
-      if (!oldSong.id) return;
       store.commit("setPlayingState", true);
-      console.log("切歌完成,准备播放歌曲");
     });
 
     // methods
