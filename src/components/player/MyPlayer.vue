@@ -127,16 +127,16 @@ export default {
       const songData = await request("/song/url", {
         id: newSong.id,
       });
-      if (songData) {
+      if (songData.data[0].url) {
         audioRef.value.src = songData.data[0].url;
         Toast({
-          message: `拿到本歌曲的url了1--${audioRef.value?.src}`,
+          message: `拿到本歌曲的url了--方式1--${audioRef.value?.src}`,
           duration: 5000,
         });
       } else {
         audioRef.value.src = `https://music.163.com/song/media/outer/url?id=${newSong.id}.mp3`;
         Toast({
-          message: `拿到本歌曲的url了2--${audioRef.value?.src}`,
+          message: `拿到本歌曲的url了--方式2--${audioRef.value?.src}`,
           duration: 5000,
         });
       }
