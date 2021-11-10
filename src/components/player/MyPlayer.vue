@@ -84,10 +84,11 @@ import useFavorite from "@/components/player/useFavorite";
 import ProgressBar from "@/components/player/ProgressBar";
 import { formatTime } from "@/assets/js/util";
 import MiniPlayer from "@/components/player/MiniPlayer";
+import { Toast } from "vant";
 
 export default {
   name: "MyPlayer",
-  components: { MiniPlayer, ProgressBar },
+  components: { MiniPlayer, ProgressBar, Toast },
   setup() {
     // data
     const audioRef = ref(null);
@@ -118,7 +119,16 @@ export default {
     watch(currentSong, async (newSong, oldSong) => {
       store.commit("setPlayingState", false);
       if (audioRef.value) {
+        Toast({
+          message: `11111--${audioRef.value?.src}`,
+          duration: 5000,
+        });
         audioRef.value.currentTime = 0;
+      } else {
+        Toast({
+          message: `22222--${audioRef.value?.src}`,
+          duration: 5000,
+        });
       }
 
       const songData = await request("/song/url", {
