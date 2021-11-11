@@ -1,24 +1,17 @@
-# vue3-music
+## 一个 Web 音乐应用
 
-## Project setup
-```
-npm install
-```
+- 移动端：
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+  - 技术栈: Vue ＋ Vant；
+  - 应用地址: https://vue3-music-fawn.vercel.app
+  - 源码：https://github.com/VikiChan2021/vue3-music
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- PC 端：
 
-### Lints and fixes files
-```
-npm run lint
-```
+  - 技术栈 React + AntD；
+  - 应用地址: https://163music-lac.vercel.app
+  - 源码：https://github.com/VikiChan2021/163music
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- 微信小程序：
+  - 因版权问题，小程序无法上架，仅提供以下截图
+  - 源码：https://github.com/VikiChan2021/wechat-music
